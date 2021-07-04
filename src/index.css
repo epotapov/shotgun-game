@@ -31,7 +31,7 @@ a {
 }
 
 .Container {
-    width: 100wv;
+    width: 100vw;
     height: 100vh;
     position: relative;
     display: flex;
@@ -44,14 +44,14 @@ a {
     width: 300px;
 }
 
-#buttonholder {
+.buttonholder {
     height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.intro button {
+.buttonholder button {
     background-color: #464545;
     cursor: pointer;
     border: 2px solid white;
@@ -61,4 +61,54 @@ a {
     font-family: open;
     padding: 5px 20px;
     text-align: center;
+}
+
+.idMarker {
+    position: fixed;
+    top: 5px;
+    left: 5px;
+}
+
+.exitMarker {
+    position: fixed;
+    background-color: #464545;
+    cursor: pointer;
+    top: 5px;
+    right: 5px;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border: 2px solid white;
+    border-radius: 20px;
+    color: white;
+}
+
+.ActionButtons button {
+    background-color: #464545;
+    cursor: pointer;
+    border: 2px solid white;
+    border-radius: 10px;
+    width: 80px;
+    height: 80px;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 1.5em;
+    color: white;
+    font-family: open;
+}
+
+@media screen and (min-width: 550px) {
+    .ActionButtons button {
+        width: 150px;
+        height: 150px;
+    }
+}
+
+@media screen and (min-width: 340px) {
+    .ActionButtons button {
+        width: 100px;
+        height: 100px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 }

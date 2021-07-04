@@ -2,10 +2,13 @@ import React from 'react'
 import ReactDom from 'react-dom'
 import './index.css'
 
-function Main() {
-  return (
-    <HomePage/>
-  );
+function App(props) {
+  const isGamepad = props.isGamepad;
+  if (!isGamepad) {
+    return <HomePage/>;
+  } else {
+    return <Gamepad/>;
+  }
 }
 
 function HomePage() {
@@ -13,8 +16,10 @@ function HomePage() {
     <div className='Container'>
       <section className="intro">
         <h1>/shotgun-game</h1>
-        <div id="buttonholder">
-          <button onClick = {hello}>start game</button>
+        <div className="buttonholder">
+          <button type="button" onClick={(e) => {
+            alert(e.target);
+          }}>start game</button>
         </div>
         <p>
           This is shotgun-game. This is based on the rock, paper,
@@ -26,16 +31,30 @@ function HomePage() {
   );
 }
 
-function hello() {
-  console.log("hello");
-}
 
 function Gamepad() {
+  const gameid = 67900;
   return (
     <div className='Container'>
-      <h1>hello</h1>
+      <p className="idMarker">game id: {gameid}</p>
+      <button className="exitMarker"><p>x</p></button>
+      <section className="game">
+        <div className="buttonholder">
+            <button type="button" onClick={(e) => {
+              alert(e.target);
+            }}>start game</button>
+        </div>
+        <section className="ActionButtons">
+              <button>shield</button>
+              <button>hit</button>
+              <button>reload</button>
+            </section>
+      </section>
     </div>
   );
 }
 
-ReactDom.render(<Main/>, document.getElementById('root'));
+ReactDom.render(
+  <App isGamepad={true} />, 
+  document.getElementById('root')
+);
