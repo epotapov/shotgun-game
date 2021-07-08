@@ -63,6 +63,10 @@ a {
     text-align: center;
 }
 
+.buttonholder button:hover {
+    background-color: #353434;
+}
+
 .idMarker {
     position: fixed;
     top: 5px;
@@ -84,9 +88,8 @@ a {
 }
 
 .ActionButtons button {
-    background-color: #464545;
     cursor: pointer;
-    border: 2px solid white;
+    border: 2px solid;
     border-radius: 10px;
     width: 80px;
     height: 80px;
@@ -97,18 +100,18 @@ a {
     font-family: open;
 }
 
-@media screen and (min-width: 550px) {
-    .ActionButtons button {
-        width: 150px;
-        height: 150px;
-    }
-}
-
 @media screen and (min-width: 340px) {
     .ActionButtons button {
         width: 100px;
         height: 100px;
         margin-left: 10px;
         margin-right: 10px;
+    }
+}
+
+@media screen and (min-width: 550px) {
+    .ActionButtons button {
+        width: 150px;
+        height: 150px;
     }
 }
