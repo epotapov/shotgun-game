@@ -1,33 +1,38 @@
 import React from 'react'
 import { useState } from 'react'
 
-export default function App(props) {
-    const isGamepad = props.isGamepad;
-    if (!isGamepad) {
+export default function App() {
+    return <HomePage/>;
+    /*if (!isGamepad) {
         return <HomePage/>;
     } else {
         return <Gamepad/>;
-    }
+    }*/
 }
   
 function HomePage() {
-    return (
-        <div className='Container'>
-            <section className="intro">
-            <h1>/shotgun-game</h1>
-            <div className="buttonholder">
-                <button type="button" onClick={(e) => {
-                    alert(e.target);
-                }}>start game</button>
+    const [isGamepad, setGamepad] = useState(false);
+    if(!isGamepad){
+        return (
+            <div className='Container'>
+                <section className="intro">
+                <h1>/shotgun-game</h1>
+                <div className="buttonholder">
+                    <button type="button" onClick={(e) => {
+                        setGamepad(true);
+                    }}>start game</button>
+                </div>
+                <p>
+                    This is shotgun-game. This is based on the rock, paper,
+                    scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
+                    You will be able to play this with a friend or by yourself. 
+                </p>
+                </section>
             </div>
-            <p>
-                This is shotgun-game. This is based on the rock, paper,
-                scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
-                You will be able to play this with a friend or by yourself. 
-            </p>
-            </section>
-        </div>
-    );
+        );
+    } else {
+        return <Gamepad/>;
+    }
 }
 
 
