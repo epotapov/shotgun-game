@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 
 export default function App() {
-    return <HomePage/>;
+    return <Gamepad/>;
     /*if (!isGamepad) {
         return <HomePage/>;
     } else {
@@ -11,61 +11,70 @@ export default function App() {
 }
   
 function HomePage() {
-    const [isGamepad, setGamepad] = useState(false);
-    if(!isGamepad){
-        return (
-            <div className='Container'>
-                <section className="intro">
-                <h1>/shotgun-game</h1>
-                <div className="buttonholder">
-                    <button type="button" onClick={(e) => {
-                        setGamepad(true);
-                    }}>start game</button>
-                </div>
-                <p>
-                    This is shotgun-game. This is based on the rock, paper,
-                    scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
-                    You will be able to play this with a friend or by yourself. 
-                </p>
-                </section>
+    //const [isGamepad, setGamepad] = useState(false);
+    //if(isGamepad) 
+    //    return <Gamepad/>;
+    return (
+        <div className='Container'>
+            <section className="intro">
+            <h1>/shotgun-game</h1>
+            <div className="buttonholder">
+                <button type="button" onClick={(e) => {
+                    //setGamepad(true);
+                }}>join game</button>
             </div>
-        );
-    } else {
-        return <Gamepad/>;
-    }
+            <p>
+                This is shotgun-game. This is based on the rock, paper,
+                scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
+                You will be able to play this with a friend or by yourself. 
+            </p>
+            </section>
+        </div>
+    );
 }
 
 
-function Gamepad() {
+function Gamepad() { 
     const gameid = 67900;
-    const num = 1;
     const ButtonStyle = {backgroundColor: "#464545", borderColor:"#353434"};
-    const NewButtonStyle = {backgroundColor: "#353434", borderColor:"white"};
-    const [number, changeNumber] = useState(num);
+    const ButtonStyleEnd = {backgroundColor: "#464545", borderColor:"#353434", pointerEvents:"none"};
+    const NewButtonStyle = {backgroundColor: "#353434", borderColor:"white", pointerEvents:"none"};
+    const [engageGame, startGame] = useState(false);
     const [sheildStyle, changeB1] = useState(ButtonStyle);
     const [hitStyle, changeB2] = useState(ButtonStyle);
     const [reloadStyle, changeB3] = useState(ButtonStyle);
+    const [secs, changeSec] = useState(5);
+
+    const Gameplay = () => {
+        setInterval(() => {
+            changeSec(secs - 1);
+        }, 1000);
+    }
+
+    //const [isGamepad, setGamepad] = useState(false);
+    //if(isGamepad) 
+    //    return <HomePage/>;
     return (
         <div className='Container'>
             <p className="idMarker">game id: {gameid}</p>
-            <button className="exitMarker"><p>x</p></button>
+            <button className="exitMarker" onClick={() =>{
+                //setGamepad(true);
+            }}><p>x</p></button>
             <section className="game">
-                <h2 style={{textAlign: "center"}}>{number}</h2>
-                <div className="buttonholder">
+                {engageGame && <div className="buttonholder"><h2>{secs}</h2></div>}
+                {!engageGame && <div className="buttonholder">
                     <button type="button" onClick={() => {
-                        
+                        startGame(true);
+                        Gameplay();
                     }}        
                     >start game</button>
-                </div>
+                </div>}
                 <section className="ActionButtons">
                     <button style={sheildStyle} 
                         onClick={() => {
-                            if (sheildStyle === ButtonStyle) {
-                            }
                             changeB1(NewButtonStyle);
-                            changeB2(ButtonStyle);
-                            changeB3(ButtonStyle);
-                            changeNumber(number - 1);
+                            changeB2(ButtonStyleEnd);
+                            changeB3(ButtonStyleEnd);
                         }}
                         onMouseEnter={() => {
                             if(sheildStyle.backgroundColor !== "#353434")
@@ -78,12 +87,9 @@ function Gamepad() {
                     >shield</button>
                     <button style={hitStyle} 
                         onClick={() => {
-                            if (hitStyle === ButtonStyle) {
-                            }
-                            changeB1(ButtonStyle);
+                            changeB1(ButtonStyleEnd);
                             changeB2(NewButtonStyle);
-                            changeB3(ButtonStyle);
-                            changeNumber(number + 1);
+                            changeB3(ButtonStyleEnd);
                         }}
                         onMouseEnter={() => {
                             if(hitStyle.backgroundColor !== "#353434") 
@@ -96,12 +102,9 @@ function Gamepad() {
                     >hit</button>
                     <button style={reloadStyle} 
                         onClick={() => {
-                            if (reloadStyle === ButtonStyle) {
-                            }
-                            changeB1(ButtonStyle);
-                            changeB2(ButtonStyle);
+                            changeB1(ButtonStyleEnd);
+                            changeB2(ButtonStyleEnd);
                             changeB3(NewButtonStyle);
-                            changeNumber(0);
                         }}
                         onMouseEnter={() => {
                             if(reloadStyle.backgroundColor !== "#353434")

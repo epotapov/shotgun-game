@@ -22,12 +22,20 @@ h1 {
     font-size: 3em;
 }
 
+.game h2 {
+    text-align: center;
+}
+
 p {
     font-size: 1.5em;
 }
 
 a {
     color: white;
+}
+
+button {
+    user-select: none;
 }
 
 .Container {
@@ -85,6 +93,10 @@ a {
     border: 2px solid white;
     border-radius: 20px;
     color: white;
+}
+
+.exitMarker:hover {
+    background-color: #353434;
 }
 
 .ActionButtons button {
