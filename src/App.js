@@ -44,10 +44,27 @@ function Gamepad() {
     const [hitStyle, changeB2] = useState(ButtonStyle);
     const [reloadStyle, changeB3] = useState(ButtonStyle);
     const [secs, changeSec] = useState(5);
+    var GameLoop = true;
 
     const Gameplay = () => {
-        setInterval(() => {
-            changeSec(secs - 1);
+        for(let i = 0; i < 2; i++) {
+            changeSec(5);
+            const GameTimeLoop = setTimeout(()=>{
+                console.log("helo")
+            }, 5000);
+        }
+    }
+
+    const GameTime = () => {
+        var timeleft = 5
+        var fiveSec = setInterval(() => {
+            changeSec((prevSec)=>{return prevSec-1;});
+            console.log(timeleft);
+            timeleft--;
+            if(timeleft < 2) {
+                console.log("hello");
+                clearInterval(fiveSec);
+            }
         }, 1000);
     }
 
