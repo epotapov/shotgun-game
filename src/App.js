@@ -1,6 +1,11 @@
 import React from 'react'
 import { useState } from 'react'
 
+var GameMove = 0;
+var reloaded = false;
+var fired = false;
+var aireloaded = false;
+
 export default function App() {
     return <Gamepad/>;
     /*if (!isGamepad) {
@@ -40,11 +45,10 @@ function Gamepad() {
     const ButtonStyleEnd = {backgroundColor: "#464545", borderColor:"#353434", pointerEvents:"none"};
     const NewButtonStyle = {backgroundColor: "#353434", borderColor:"white", pointerEvents:"none"};
     const [engageGame, startGame] = useState(false);
-    const [sheildStyle, changeB1] = useState(ButtonStyle);
-    const [hitStyle, changeB2] = useState(ButtonStyle);
-    const [reloadStyle, changeB3] = useState(ButtonStyle);
+    const [shieldStyle, changeB1] = useState(ButtonStyleEnd);
+    const [reloadStyle, changeB2] = useState(ButtonStyleEnd);
+    const [hitStyle, changeB3] = useState(ButtonStyleEnd);
     const [gameDisplay, changeDis] = useState(5);
-    let GameMove = 0;
 
     function TimedDisplay (x) {
         switch(x) {
@@ -73,9 +77,8 @@ function Gamepad() {
                     var timeleft = 5
                     changeDis(timeleft);
                     var fiveSec = setInterval(() => {
-                        console.log(timeleft);
                         timeleft--;
-                        if(timeleft < 2) {
+                        if(timeleft < 1) {
                             clearInterval(fiveSec);
                             resolve();
                         }
@@ -92,8 +95,10 @@ function Gamepad() {
     const reEnable = () => {
         changeB1(ButtonStyle);
         changeB2(ButtonStyle);
-        changeB3(ButtonStyle);
-        GameMove = 0;
+        if(fired)
+            changeB3(ButtonStyleEnd);
+        else if(reloaded)
+            changeB3(ButtonStyle);
     }
 
     const disable = () => {
@@ -103,21 +108,50 @@ function Gamepad() {
     }
 
     const ai = () => {
-        let i = Math.random(8);
+        let i = Math.floor(Math.random()*4);
+        if(aireloaded)
+            i = Math.floor(Math.random()*6);
+        if(i >= 0 && i <= 2) 
+            return 1;
+        if(i === 3) {
+            aireloaded = true;
+            return 2;
+        }
+        if(i === 4 || i === 5) {
+            aireloaded = false;
+            return 3;
+        }
     }
 
     const Gameplay = async () => {
+        aireloaded = false;
         while(true) {
+            GameMove = 0;
             reEnable();
             await TimedDisplay(5);
-            console.log(GameMove);
-            if(GameMove == 1) {
+            disable();
+            if(GameMove == 0) {
                 await TimedDisplay(4);
                 break;
+            }
+            let Aichoice = ai();
+            console.log(Aichoice);
+            if(GameMove === 3 && (Aichoice === 2 || Aichoice === 3)) {
+                await TimedDisplay(2);
+                break;
+            } else if (Aichoice === 3 && GameMove === 2) {
+                await TimedDisplay(3);
+                break;
+            } else {
+                await TimedDisplay(1);
             }
         }
         startGame(false);
         disable();
+    }
+
+    function Turn(x) {
+        GameMove = 1;
     }
 
     //const [isGamepad, setGamepad] = useState(false);
@@ -139,7 +173,7 @@ function Gamepad() {
                     >start game</button>
                 </div>}
                 <section className="ActionButtons">
-                    <button style={sheildStyle} 
+                    <button style={shieldStyle} 
                         onClick={() => {
                             GameMove = 1;
                             changeB1(NewButtonStyle);
@@ -147,47 +181,51 @@ function Gamepad() {
                             changeB3(ButtonStyleEnd);
                         }}
                         onMouseEnter={() => {
-                            if(sheildStyle.backgroundColor !== "#353434")
-                                changeB1({...sheildStyle, borderColor: "white"});
+                            if(shieldStyle.backgroundColor !== "#353434")
+                                changeB1({...shieldStyle, borderColor: "white"});
                         }}
                         onMouseLeave={() =>{
-                            if(sheildStyle.backgroundColor !== "#353434")
-                                changeB1({...sheildStyle, borderColor: "#353434"});
+                            if(shieldStyle.backgroundColor !== "#353434")
+                                changeB1({...shieldStyle, borderColor: "#353434"});
                         }}
                     >shield</button>
-                    <button style={hitStyle} 
+                    <button style={reloadStyle} 
                         onClick={() => {
                             GameMove = 2;
                             changeB1(ButtonStyleEnd);
                             changeB2(NewButtonStyle);
                             changeB3(ButtonStyleEnd);
+                            reloaded = true;
+                            fired = false;
                         }}
                         onMouseEnter={() => {
-                            if(hitStyle.backgroundColor !== "#353434") 
-                                changeB2({...hitStyle, borderColor: "white"});
+                            if(reloadStyle.backgroundColor !== "#353434")
+                                changeB2({...reloadStyle, borderColor: "white"});
+
                         }}
                         onMouseLeave={() =>{
-                            if(hitStyle.backgroundColor !== "#353434") 
-                                changeB2({...hitStyle, borderColor: "#353434"});
+                            if(reloadStyle.backgroundColor !== "#353434")
+                                changeB2({...reloadStyle, borderColor: "#353434"});
                         }}
-                    >hit</button>
-                    <button style={reloadStyle} 
+                    >reload</button>
+                    <button style={hitStyle} 
                         onClick={() => {
                             GameMove = 3;
                             changeB1(ButtonStyleEnd);
                             changeB2(ButtonStyleEnd);
                             changeB3(NewButtonStyle);
+                            reloaded = false;
+                            fired = true;
                         }}
                         onMouseEnter={() => {
-                            if(reloadStyle.backgroundColor !== "#353434")
-                                changeB3({...reloadStyle, borderColor: "white"});
-
+                            if(hitStyle.backgroundColor !== "#353434") 
+                                changeB3({...hitStyle, borderColor: "white"});
                         }}
                         onMouseLeave={() =>{
-                            if(reloadStyle.backgroundColor !== "#353434")
-                                changeB3({...reloadStyle, borderColor: "#353434"});
+                            if(hitStyle.backgroundColor !== "#353434") 
+                                changeB3({...hitStyle, borderColor: "#353434"});
                         }}
-                    >reload</button>
+                    >hit</button>
                 </section>
             </section>
         </div>
