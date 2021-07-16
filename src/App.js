@@ -43,29 +43,81 @@ function Gamepad() {
     const [sheildStyle, changeB1] = useState(ButtonStyle);
     const [hitStyle, changeB2] = useState(ButtonStyle);
     const [reloadStyle, changeB3] = useState(ButtonStyle);
-    const [secs, changeSec] = useState(5);
-    var GameLoop = true;
+    const [gameDisplay, changeDis] = useState(5);
+    let GameMove = 0;
 
-    const Gameplay = () => {
-        for(let i = 0; i < 2; i++) {
-            changeSec(5);
-            const GameTimeLoop = setTimeout(()=>{
-                console.log("helo")
-            }, 5000);
+    function TimedDisplay (x) {
+        switch(x) {
+            case 1:
+                return new Promise(resolve => {
+                    changeDis("Nothing Happened");
+                    setTimeout(resolve, 2000);
+                });
+            case 2:
+                return new Promise(resolve => {
+                    changeDis("You won");
+                    setTimeout(resolve, 2000);
+                });    
+            case 3:
+                return new Promise(resolve => {
+                    changeDis("You Lost");
+                    setTimeout(resolve, 2000);
+                });   
+            case 4:
+                return new Promise(resolve => {
+                    changeDis("You didn't do anything");
+                    setTimeout(resolve, 2000);
+                });   
+            case 5:
+                return new Promise(resolve => {
+                    var timeleft = 5
+                    changeDis(timeleft);
+                    var fiveSec = setInterval(() => {
+                        console.log(timeleft);
+                        timeleft--;
+                        if(timeleft < 2) {
+                            clearInterval(fiveSec);
+                            resolve();
+                        }
+                        changeDis((prevSec)=>{return prevSec-1;});
+                    }, 1000);
+                }); 
         }
     }
 
-    const GameTime = () => {
-        var timeleft = 5
-        var fiveSec = setInterval(() => {
-            changeSec((prevSec)=>{return prevSec-1;});
-            console.log(timeleft);
-            timeleft--;
-            if(timeleft < 2) {
-                console.log("hello");
-                clearInterval(fiveSec);
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    const reEnable = () => {
+        changeB1(ButtonStyle);
+        changeB2(ButtonStyle);
+        changeB3(ButtonStyle);
+        GameMove = 0;
+    }
+
+    const disable = () => {
+        changeB1(ButtonStyleEnd);
+        changeB2(ButtonStyleEnd);
+        changeB3(ButtonStyleEnd);
+    }
+
+    const ai = () => {
+        let i = Math.random(8);
+    }
+
+    const Gameplay = async () => {
+        while(true) {
+            reEnable();
+            await TimedDisplay(5);
+            console.log(GameMove);
+            if(GameMove == 1) {
+                await TimedDisplay(4);
+                break;
             }
-        }, 1000);
+        }
+        startGame(false);
+        disable();
     }
 
     //const [isGamepad, setGamepad] = useState(false);
@@ -78,7 +130,7 @@ function Gamepad() {
                 //setGamepad(true);
             }}><p>x</p></button>
             <section className="game">
-                {engageGame && <div className="buttonholder"><h2>{secs}</h2></div>}
+                {engageGame && <div className="buttonholder"><h2>{gameDisplay}</h2></div>}
                 {!engageGame && <div className="buttonholder">
                     <button type="button" onClick={() => {
                         startGame(true);
@@ -89,6 +141,7 @@ function Gamepad() {
                 <section className="ActionButtons">
                     <button style={sheildStyle} 
                         onClick={() => {
+                            GameMove = 1;
                             changeB1(NewButtonStyle);
                             changeB2(ButtonStyleEnd);
                             changeB3(ButtonStyleEnd);
@@ -104,6 +157,7 @@ function Gamepad() {
                     >shield</button>
                     <button style={hitStyle} 
                         onClick={() => {
+                            GameMove = 2;
                             changeB1(ButtonStyleEnd);
                             changeB2(NewButtonStyle);
                             changeB3(ButtonStyleEnd);
@@ -119,6 +173,7 @@ function Gamepad() {
                     >hit</button>
                     <button style={reloadStyle} 
                         onClick={() => {
+                            GameMove = 3;
                             changeB1(ButtonStyleEnd);
                             changeB2(ButtonStyleEnd);
                             changeB3(NewButtonStyle);
