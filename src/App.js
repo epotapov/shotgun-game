@@ -50,12 +50,25 @@ function Gamepad() {
     const [hitStyle, changeB3] = useState(ButtonStyleEnd);
     const [gameDisplay, changeDis] = useState(5);
 
-    function TimedDisplay (x) {
+    function TimedDisplay (x, opponentMove) {
         switch(x) {
             case 1:
                 return new Promise(resolve => {
-                    changeDis("Nothing Happened");
-                    setTimeout(resolve, 2000);
+                    switch(opponentMove) {
+                        case 1:
+                            changeDis("Opponent: Shield");
+                            setTimeout(resolve, 2000); 
+                            break;
+                        case 2:
+                            changeDis("Opponent: Reload");
+                            setTimeout(resolve, 2000);
+                            break;
+                        default:
+                            changeDis("Opponent: Hit");
+                            setTimeout(resolve, 2000);
+                            break;
+                    }
+                    
                 });
             case 2:
                 return new Promise(resolve => {
@@ -143,7 +156,7 @@ function Gamepad() {
                 await TimedDisplay(3);
                 break;
             } else {
-                await TimedDisplay(1);
+                await TimedDisplay(1, Aichoice);
             }
         }
         startGame(false);
