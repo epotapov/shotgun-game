@@ -1,5 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 var GameMove = 0;
 var reloaded = false;
@@ -7,12 +9,21 @@ var fired = false;
 var aireloaded = false;
 
 export default function App() {
-    return <Gamepad/>;
-    /*if (!isGamepad) {
-        return <HomePage/>;
-    } else {
-        return <Gamepad/>;
-    }*/
+    return(
+        <Router>
+            <Switch>
+                <Route exact path="/">
+                    <HomePage/> 
+                </Route>
+                <Route exact path="/gamepad">
+                    <Gamepad/> 
+                </Route> 
+                <Route exact path="*">
+                    <ErrorPage/> 
+                </Route>
+            </Switch>
+        </Router>
+    );
 }
   
 function HomePage() {
@@ -22,18 +33,32 @@ function HomePage() {
     return (
         <div className='Container'>
             <section className="intro">
-            <h1>/shotgun-game</h1>
-            <div className="buttonholder">
-                <button type="button" onClick={(e) => {
-                    //setGamepad(true);
-                }}>join game</button>
-            </div>
-            <p>
-                This is shotgun-game. This is based on the rock, paper,
-                scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
-                You will be able to play this with a friend or by yourself. 
-            </p>
+                <h1>/shotgun-game</h1>
+                <div className="buttonholder">
+                    <button type="button" >
+                        <Link className="link" to="/gamepad">join game</Link>
+                    </button>
+                </div>
+                <p>
+                    This is shotgun-game. This is based on the rock, paper,
+                    scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
+                    You will be able to play this with a friend or by yourself. 
+                </p>
             </section>
+        </div>
+    );
+}
+
+
+function ErrorPage() {
+    return(
+        <div className="Container">
+            <button className="exitMarker">
+                <Link className="link" to="/">
+                    <p>x</p>
+                </Link>
+            </button>
+            <h1>Error 404</h1>
         </div>
     );
 }
@@ -163,19 +188,17 @@ function Gamepad() {
         disable();
     }
 
-    function Turn(x) {
-        GameMove = 1;
-    }
-
     //const [isGamepad, setGamepad] = useState(false);
     //if(isGamepad) 
     //    return <HomePage/>;
     return (
         <div className='Container'>
             <p className="idMarker">game id: {gameid}</p>
-            <button className="exitMarker" onClick={() =>{
-                //setGamepad(true);
-            }}><p>x</p></button>
+            <button className="exitMarker">
+                <Link className="link" to="/">
+                    <p>x</p>
+                </Link>
+            </button>
             <section className="game">
                 {engageGame && <div className="buttonholder"><h2>{gameDisplay}</h2></div>}
                 {!engageGame && <div className="buttonholder">

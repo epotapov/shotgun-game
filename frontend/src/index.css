@@ -38,6 +38,10 @@ button {
     user-select: none;
 }
 
+.link {
+    text-decoration: none;
+}
+
 .Container {
     width: 100vw;
     height: 100vh;
