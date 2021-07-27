@@ -1,16 +1,15 @@
 const express = require('express');
-
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 const port = process.env.PORT || 5000;
-
-app.use(express.static('./public'));
 
 /*
 app.get("/",(req, res) => {
     res.send("<h1>homepage<h1/>")
 });
-*/
-
 app.get("/game", (req,res)=>{
     const {id} = req.query;
     console.log(id)
@@ -24,11 +23,17 @@ app.get("/game", (req,res)=>{
     }
     return res.status(404).send('<h1>error 404<h1/>');
 });
-
+*/
 /*app.all('*', (req,res) => {
     res.status(404).send("<h1>Error 404</h1>");
 });*/
 
-app.listen(port, () => {
+app.use(express.static('./public'));
+
+io.on('connection', (socket) => {
+    console.log('a user connected');
+});
+
+server.listen(port, () => {
     console.log('server is listening on localhost ' + port);
 });

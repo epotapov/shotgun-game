@@ -1,12 +1,16 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState , useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import {io} from "socket.io-client";
+
 
 var GameMove = 0;
 var reloaded = false;
 var fired = false;
 var aireloaded = false;
+
+const socket = io();
 
 export default function App() {
     return(
@@ -27,23 +31,37 @@ export default function App() {
 }
   
 function HomePage() {
-    //const [isGamepad, setGamepad] = useState(false);
-    //if(isGamepad) 
-    //    return <Gamepad/>;
     return (
         <div className='Container'>
             <section className="intro">
                 <h1>/shotgun-game</h1>
+                <section id="InputHolder">
+                    <input type="text" placeholder="game id"></input>
+                </section>
                 <div className="buttonholder">
                     <button type="button" >
                         <Link className="link" to="/gamepad">join game</Link>
                     </button>
                 </div>
                 <p>
-                    This is shotgun-game. This is based on the rock, paper,
-                    scissors <a href="https://www.wikihow.com/Play-the-Shotgun-Game" target="_blank" rel="noreferrer">style game</a>. 
-                    You will be able to play this with a friend or by yourself. 
+                    Rules:
                 </p>
+                <ul>
+                    <li>Every five seconds players pick:</li>
+                    <ul>
+                        <li>Shield</li>
+                        <li>Reload</li>
+                        <li>Hit (Reload to Pick)</li>
+                    </ul>
+                    <li>Shield proctects against hits</li>
+                    <li>Wins are obtained through unguarded hits (Hit a reloading player)</li>
+                    <li>Ties are when both hit each other</li>
+                </ul>
+                <div className="buttonholder">
+                    <button type="button" >
+                        create game
+                    </button>
+                </div>
             </section>
         </div>
     );
@@ -55,7 +73,7 @@ function ErrorPage() {
         <div className="Container">
             <button className="exitMarker">
                 <Link className="link" to="/">
-                    <p>x</p>
+                    x
                 </Link>
             </button>
             <h1>Error 404</h1>
@@ -188,15 +206,12 @@ function Gamepad() {
         disable();
     }
 
-    //const [isGamepad, setGamepad] = useState(false);
-    //if(isGamepad) 
-    //    return <HomePage/>;
     return (
         <div className='Container'>
             <p className="idMarker">game id: {gameid}</p>
             <button className="exitMarker">
                 <Link className="link" to="/">
-                    <p>x</p>
+                    x
                 </Link>
             </button>
             <section className="game">
