@@ -25,14 +25,29 @@ io.on('connection', (socket) => {
     console.log('a user connected');
     
 
-    socket.on('create game', () => { //work on checking game id duplicates
+    socket.on('create game', () => { 
         var id = "";
         for(let i = 0; i < 6; i++) {
-            if(i >= 3) {
+            if(i < 3) {
                 id += Math.floor(Math.random() * 10);
+                console.log("what up")
             } else {
                 id += characters.charAt(Math.floor(Math.random() * 
                 characters.length));
+                console.log("what down")
+            }
+        } 
+        while(games[id]) {
+            id = "";
+            for(let i = 0; i < 6; i++) {
+                if(i < 3) {
+                    id += Math.floor(Math.random() * 10);
+                    console.log("what up")
+                } else {
+                    id += characters.charAt(Math.floor(Math.random() * 
+                    characters.length));
+                    console.log("what down")
+                }
             }
         }
         createGame(id);
@@ -44,15 +59,14 @@ io.on('connection', (socket) => {
 
     socket.on('join game', (gameid) => {
         if(!games[gameid]) {
-            //const error = "This room doesn't exist";
-            //socket.emit("display-error", error);
-            console.log("room doesn't exist");
+            socket.emit('display error');
         } else {
             joinGame(gameid);
-            socket.emit('enter player 2', id);
+            socket.emit("joinRoomSuccess");
+            socket.emit('enter player 2', gameid);
             socket.join(gameid);
             socket.broadcast.to(gameid).emit("full game");
-            console.log(socket);
+            console.log(games);
         }
     });
 
@@ -63,6 +77,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('a user disconnected ');
     });
+});
+
+app.all('*', (req, res) => {
+    res.send("<h1>Error<h1/>")
 });
 
 server.listen(port, () => {

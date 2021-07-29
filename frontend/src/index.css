@@ -100,6 +100,15 @@ button {
     text-align: center;
 }
 
+.ErrorMessage {
+    height: 1rem;
+}
+
+.ErrorMessage p {
+    font-size: 1rem;
+    text-align: center;
+}
+
 .buttonholder button:hover {
     background-color: #353434;
 }
