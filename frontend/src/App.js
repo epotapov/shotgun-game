@@ -31,15 +31,18 @@ export default function App() {
 }
   
 function HomePage() {
+    var input;
     return (
         <div className='Container'>
             <section className="intro">
                 <h1>/shotgun-game</h1>
                 <section id="InputHolder">
-                    <input type="text" placeholder="game id"></input>
+                    <input type="text" placeholder="game id" value={input}></input>
                 </section>
                 <div className="buttonholder">
-                    <button type="button" >
+                    <button type="button" onClick={() => {
+                        console.log(input);
+                    }}>
                         <Link className="link" to="/gamepad">join game</Link>
                     </button>
                 </div>
@@ -61,7 +64,7 @@ function HomePage() {
                     <button type="button" onClick={() => {
                         socket.emit('create game');
                     }}>
-                        create game
+                        <Link className="link" to="/gamepad">create game</Link>
                     </button>
                 </div>
             </section>
@@ -85,15 +88,33 @@ function ErrorPage() {
 
 
 function Gamepad() { 
-    const gameid = 67900;
     const ButtonStyle = {backgroundColor: "#464545", borderColor:"#353434"};
     const ButtonStyleEnd = {backgroundColor: "#464545", borderColor:"#353434", pointerEvents:"none"};
     const NewButtonStyle = {backgroundColor: "#353434", borderColor:"white", pointerEvents:"none"};
-    const [engageGame, startGame] = useState(false);
+    const [gameid, initGameid] = useState();
+    const [engageGame, startText] = useState(false);
     const [shieldStyle, changeB1] = useState(ButtonStyleEnd);
     const [reloadStyle, changeB2] = useState(ButtonStyleEnd);
     const [hitStyle, changeB3] = useState(ButtonStyleEnd);
-    const [gameDisplay, changeDis] = useState(5);
+    const [gameDisplay, changeDis] = useState("Waiting for player 2");
+
+    useEffect(() => {
+
+        socket.on('enter game', (id) => {
+            initGameid(id);
+            startText(true);
+        });
+
+        socket.on('enter player 2', (id) => {
+            initGameid(id);
+        });
+
+        socket.on('full game', (id) => {
+            startText(false);
+        });
+
+    }, []);
+
 
     function TimedDisplay (x, opponentMove) {
         switch(x) {
@@ -204,7 +225,7 @@ function Gamepad() {
                 await TimedDisplay(1, Aichoice);
             }
         }
-        startGame(false);
+        startText(false);
         disable();
     }
 
@@ -220,7 +241,8 @@ function Gamepad() {
                 {engageGame && <div className="buttonholder"><h2>{gameDisplay}</h2></div>}
                 {!engageGame && <div className="buttonholder">
                     <button type="button" onClick={() => {
-                        startGame(true);
+                        changeDis(5);
+                        startText(true);
                         Gameplay();
                     }}        
                     >start game</button>
