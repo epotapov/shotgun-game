@@ -58,7 +58,9 @@ function HomePage() {
                     <li>Ties are when both hit each other</li>
                 </ul>
                 <div className="buttonholder">
-                    <button type="button" >
+                    <button type="button" onClick={() => {
+                        socket.emit('create game');
+                    }}>
                         create game
                     </button>
                 </div>
