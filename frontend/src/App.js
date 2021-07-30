@@ -53,7 +53,7 @@ export default function App() {
                             </button>
                         </div>
                         <div className="ErrorMessage">
-                            {errorBool && <p>game doesn't exist</p>}
+                            {errorBool && <p>couldn't connect to game</p>}
                         </div>
                     </form>
                     <p>
@@ -100,12 +100,13 @@ export default function App() {
         const ButtonStyle = {backgroundColor: "#464545", borderColor:"#353434"};
         const ButtonStyleEnd = {backgroundColor: "#464545", borderColor:"#353434", pointerEvents:"none"};
         const NewButtonStyle = {backgroundColor: "#353434", borderColor:"white", pointerEvents:"none"};
+        const waiting = "waiting for opponent"
         const [gameid, initGameid] = useState();
         const [engageGame, startText] = useState(false);
         const [shieldStyle, changeB1] = useState(ButtonStyleEnd);
         const [reloadStyle, changeB2] = useState(ButtonStyleEnd);
         const [hitStyle, changeB3] = useState(ButtonStyleEnd);
-        const [gameDisplay, changeDis] = useState("Waiting for player 2");
+        const [gameDisplay, changeDis] = useState(waiting);
 
         useEffect(() => {
 
@@ -116,6 +117,11 @@ export default function App() {
 
             socket.on('enter player 2', (id) => {
                 initGameid(id);
+            });
+
+            socket.on('player 2 leaves', () => {
+                startText(true);
+                changeDis(waiting)
             });
 
             socket.on('full game', (id) => {
@@ -243,6 +249,7 @@ export default function App() {
                 <p className="idMarker">game id: {gameid}</p>
                 <button className="exitMarker" onClick={() => {
                     SwitchComp(1);
+                    socket.emit('leave game');
                 }}>
                     x
                 </button>
