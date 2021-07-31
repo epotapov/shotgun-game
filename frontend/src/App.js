@@ -29,7 +29,7 @@ export default function App() {
             socket.on('joinRoomSuccess', () => SwitchComp(2));
         }, []);
 
-        return (
+        return ( //fix ui for mobile
             <div className='Container'>
                 <section className="intro">
                     <h1>/shotgun-game</h1>

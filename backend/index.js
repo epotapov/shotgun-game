@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
         
     });
 
-    socket.on('leave game', () => {
+    const leave = () => {
         for(let id in games) {
             for(let i = 0; i < games[id].length; i++) {
                 if(games[id][i] === socket.client.id) {
@@ -91,20 +91,15 @@ io.on('connection', (socket) => {
                 }
             }
         }
+    }
+
+    socket.on('leave game', () => {
+        leave();
         console.log(games);
     });
 
     socket.on('disconnect', () => {
-        for(let id in games) {
-            for(let i = 0; i < games[id].length; i++) {
-                if(games[id][i] === socket.client.id) {
-                    exitGame(id, socket.client.id);
-                    if(games[id])
-                        socket.broadcast.to(id).emit("player 2 leaves");
-                    break;
-                }
-            }
-        }
+        leave();
         console.log(games);
         console.log('a user disconnected ');
     });
