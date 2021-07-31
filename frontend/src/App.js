@@ -124,8 +124,20 @@ export default function App() {
                 changeDis(waiting)
             });
 
-            socket.on('full game', (id) => {
+            socket.on('full game', () => {
                 startText(false);
+            });
+
+            socket.on('init game', () => {
+                startText(true);
+            });
+
+            socket.on('enable', () => reEnable());
+
+            socket.on('disable', () => disable());
+
+            socket.on('display', (message) => {
+                changeDis(message);
             });
 
         }, []);
@@ -257,16 +269,14 @@ export default function App() {
                     {engageGame && <div className="buttonholder"><h2>{gameDisplay}</h2></div>}
                     {!engageGame && <div className="buttonholder">
                         <button type="button" onClick={() => {
-                            changeDis(5);
-                            startText(true);
-                            Gameplay();
+                            socket.emit('start game', gameid);
                         }}        
                         >start game</button>
                     </div>}
                     <section className="ActionButtons">
                         <button style={shieldStyle} 
                             onClick={() => {
-                                GameMove = 1;
+                                socket.emit('make move', 1);
                                 changeB1(NewButtonStyle);
                                 changeB2(ButtonStyleEnd);
                                 changeB3(ButtonStyleEnd);
@@ -282,7 +292,7 @@ export default function App() {
                         >shield</button>
                         <button style={reloadStyle} 
                             onClick={() => {
-                                GameMove = 2;
+                                socket.emit('make move', 2);
                                 changeB1(ButtonStyleEnd);
                                 changeB2(NewButtonStyle);
                                 changeB3(ButtonStyleEnd);
@@ -301,7 +311,7 @@ export default function App() {
                         >reload</button>
                         <button style={hitStyle} 
                             onClick={() => {
-                                GameMove = 3;
+                                socket.emit('make move', 3);
                                 changeB1(ButtonStyleEnd);
                                 changeB2(ButtonStyleEnd);
                                 changeB3(NewButtonStyle);
