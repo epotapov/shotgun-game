@@ -107,22 +107,6 @@ io.on('connection', (socket) => {
                     console.log(socket.id)
                     io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
                     io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
-                    //io.in(id).emit('display-user', user1, gameChoiceDisplay(userChoice[user1]), user2, gameChoiceDisplay(userChoice[user1]));
-                    /*for(let i = 0; i < games[id].length; i++) {
-                        if(socket.id !== games[id][i]) {
-                            socket.emit('display', gameChoiceDisplay(userChoice[games[id][i]]));
-                        }
-                    }
-                    console.log(user2)
-                    console.log(socket.id)
-                    console.log(user1)
-                    if(socket.id === user1) {
-                        socket.emit('display', gameChoiceDisplay(userChoice[user2]));
-                        io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
-                    } else if (socket.id === user2) {
-                        socket.emit('display', gameChoiceDisplay(userChoice[user1]));
-                        io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
-                    }*/
                     setTimeout(resolve, 2000);
                 });
             case 2: //someone won
