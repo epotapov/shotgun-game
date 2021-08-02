@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const http = require('http');
+const path = require('path');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -42,6 +43,17 @@ const joinGame = (gameid, userid) => {
     games[gameid].push(userid);
 }
 
+const gameChoiceDisplay = (choice) => {
+    switch(choice) {
+        case 1:
+            return "opponent: shield"
+        case 2:
+            return "opponent: reload"
+        case 3:
+            return "opponent: hit"
+    }
+}
+
 const exitGame = (gameid, userid) => {
     if(games[gameid].length === 1) {
         delete games[gameid];
@@ -64,11 +76,12 @@ io.on('connection', (socket) => {
         while(games[id]) {
             id = createId();
         }
-        createGame(id, socket.client.id);
-        createMove(socket.client.id);
+        createGame(id, socket.id);
+        createMove(socket.id);
         socket.emit('enter game', id);
         socket.join(id);
         console.log(id);
+        console.log(socket.id)
         console.log(games);
     });
 
@@ -76,104 +89,113 @@ io.on('connection', (socket) => {
         if(!games[gameid] || (games[gameid].length === 2)) {
             socket.emit('display error');
         } else {
-            joinGame(gameid, socket.client.id);
-            createMove(socket.client.id);
+            joinGame(gameid, socket.id);
+            createMove(socket.id);
             socket.emit('joinRoomSuccess');
             socket.emit('enter player 2', gameid);
             socket.join(gameid);
+            console.log(socket.id)
             socket.broadcast.to(gameid).emit('full game');
             console.log(games);
         }
     });
 
-    function TimedDisplay (x, opponentMove, id) {
+    const TimedDisplay = (x, id, user1, user2) => {
         switch(x) {
-            case 1:
+            case 1: // No action game goes on
                 return new Promise(resolve => {
-                    switch(opponentMove) {
-                        case 1:
-                            changeDis("Opponent: Shield");
-                            setTimeout(resolve, 2000); 
-                            break;
-                        case 2:
-                            changeDis("Opponent: Reload");
-                            setTimeout(resolve, 2000);
-                            break;
-                        default:
-                            changeDis("Opponent: Hit");
-                            setTimeout(resolve, 2000);
-                            break;
+                    console.log(socket.id)
+                    io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
+                    io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
+                    //io.in(id).emit('display-user', user1, gameChoiceDisplay(userChoice[user1]), user2, gameChoiceDisplay(userChoice[user1]));
+                    /*for(let i = 0; i < games[id].length; i++) {
+                        if(socket.id !== games[id][i]) {
+                            socket.emit('display', gameChoiceDisplay(userChoice[games[id][i]]));
+                        }
                     }
-                    
+                    console.log(user2)
+                    console.log(socket.id)
+                    console.log(user1)
+                    if(socket.id === user1) {
+                        socket.emit('display', gameChoiceDisplay(userChoice[user2]));
+                        io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
+                    } else if (socket.id === user2) {
+                        socket.emit('display', gameChoiceDisplay(userChoice[user1]));
+                        io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
+                    }*/
+                    setTimeout(resolve, 2000);
                 });
-            case 2:
+            case 2: //someone won
                 return new Promise(resolve => {
-                    changeDis("You won");
+                    io.to(user1).emit('display', "you won");
+                    io.to(user2).emit('display', "you lost");
                     setTimeout(resolve, 2000);
                 });    
             case 3:
                 return new Promise(resolve => {
-                    changeDis("You Lost");
+                    io.in(id).emit('display', "game tied"); 
                     setTimeout(resolve, 2000);
                 });   
             case 4:
                 return new Promise(resolve => {
-                    changeDis("You didn't do anything");
+                    io.in(id).emit('display', "game ended due to inactivity");
                     setTimeout(resolve, 2000);
                 });   
             case 5:
                 return new Promise(resolve => {
                     var timeleft = 5
-                    socket.broadcast.to(id).emit('display', timeleft);
+                    io.in(id).emit('display', timeleft);
                     var fiveSec = setInterval(() => {
                         timeleft--;
                         if(timeleft < 1) {
                             clearInterval(fiveSec);
                             resolve();
                         }
-                        socket.broadcast.to(id).emit('display', timeleft);
+                        io.in(id).emit('display', timeleft);
                     }, 1000);
                 }); 
         }
     }
 
     socket.on('start game', async (id) => {
-        socket.broadcast.to(id).emit('init game');
+        io.in(id).emit('init game');
         while(true) {
-            createMove(socket.client.id);
-            socket.broadcast.to(id).emit('enable');
-            await TimedDisplay(5);
-            socket.broadcast.to(id).emit('disable');
-            if(GameMove === 0) {
-                await TimedDisplay(4);
+            createMove(socket.id);
+            io.in(id).emit('enable');
+            await TimedDisplay(5, id);
+            io.in(id).emit('disable');
+            if(userChoice[games[id][0]] === 0 || userChoice[games[id][1]] === 0) {
+                await TimedDisplay(4, id);
                 break;
             }
-            let Aichoice = ai(); //implement the deciding thing for the thing
-            console.log(Aichoice);
-            if(GameMove === 3 && (Aichoice === 2 || Aichoice === 3)) {
-                await TimedDisplay(2);
+            if(userChoice[games[id][0]] === 3 && userChoice[games[id][1]] === 3) {
+                await TimedDisplay(3, id);
                 break;
-            } else if (Aichoice === 3 && GameMove === 2) {
-                await TimedDisplay(3);
+            }
+            if(userChoice[games[id][0]] === 3 && userChoice[games[id][1]] === 2) {
+                await TimedDisplay(2, id, games[id][0], games[id][1]);
                 break;
+            } if(userChoice[games[id][1]] === 3 && userChoice[games[id][0]] === 2) {
+                await TimedDisplay(2, id, games[id][1], games[id][0]);
+                break; 
             } else {
-                await TimedDisplay(1, Aichoice);
+                await TimedDisplay(1, id, games[id][0], games[id][1]);
             }
         }
-        socket.broadcast.to(id).emit('full game');
-        socket.broadcast.to(id).emit('disable');
+        io.in(id).emit('full game');
+        io.in(id).emit('disable');
     });
 
     socket.on('make move', (move) => {
-        userChoice[socket.client.id] = move;
+        userChoice[socket.id] = move;
     });
 
     const leave = () => {
         for(let id in games) {
             for(let i = 0; i < games[id].length; i++) {
-                if(games[id][i] === socket.client.id) {
-                    exitGame(id, socket.client.id);
-                    deleteUser(socket.client.id);
+                if(games[id][i] === socket.id) {
+                    exitGame(id, socket.id);
+                    deleteUser(socket.id);
                     if(games[id])
                         socket.broadcast.to(id).emit("player 2 leaves");
                     break;
@@ -195,7 +217,7 @@ io.on('connection', (socket) => {
 });
 
 app.all('*', (req, res) => {
-    res.status(404).send("<h1>Error<h1/>")
+    res.status(404).sendFile(path.resolve(__dirname, './errorPage/error.html'))
 });
 
 server.listen(port, () => {

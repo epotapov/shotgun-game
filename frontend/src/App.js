@@ -100,7 +100,7 @@ export default function App() {
         const ButtonStyle = {backgroundColor: "#464545", borderColor:"#353434"};
         const ButtonStyleEnd = {backgroundColor: "#464545", borderColor:"#353434", pointerEvents:"none"};
         const NewButtonStyle = {backgroundColor: "#353434", borderColor:"white", pointerEvents:"none"};
-        const waiting = "waiting for opponent"
+        const waiting = "waiting for opponent";
         const [gameid, initGameid] = useState();
         const [engageGame, startText] = useState(false);
         const [shieldStyle, changeB1] = useState(ButtonStyleEnd);
@@ -130,6 +130,8 @@ export default function App() {
 
             socket.on('init game', () => {
                 startText(true);
+                reloaded = false;
+                fired = false;
             });
 
             socket.on('enable', () => reEnable());
@@ -141,7 +143,6 @@ export default function App() {
             });
 
         }, []);
-
 
         function TimedDisplay (x, opponentMove) {
             switch(x) {
