@@ -30,7 +30,7 @@ export default function App() {
         }, []);
 
         return ( //fix ui for mobile
-            <div className='Container'>
+            <div className='HomeContainer'>
                 <section className="intro">
                     <h1>/shotgun-game</h1>
                     <form onSubmit={(e) => {

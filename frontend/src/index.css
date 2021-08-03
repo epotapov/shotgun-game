@@ -57,6 +57,15 @@ button {
     align-items: center;
 }
 
+.HomeContainer {
+    height: 630px;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
 .intro {
     width: 310px;
 }
@@ -150,6 +159,12 @@ button {
     font-size: 1.5rem;
     color: white;
     font-family: open;
+}
+
+@media screen and (min-height: 630px) {
+    .HomeContainer {
+        height: 100vh;
+    }
 }
 
 @media screen and (min-width: 340px) {
