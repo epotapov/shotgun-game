@@ -1,14 +1,11 @@
 import React from 'react'
 import { useState , useEffect } from 'react'
-//import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-//import { Link } from 'react-router-dom';
-import {io} from "socket.io-client";
+import { useForm } from "react-hook-form";
+import { io } from "socket.io-client";
 
 
-var GameMove = 0;
 var reloaded = false;
 var fired = false;
-var aireloaded = false;
 
 const socket = io();
 
@@ -21,7 +18,7 @@ export default function App() {
 
     
     function HomePage() {
-        const [input, setInput] = useState();
+        const {register, handleSubmit} = useForm();
         const [errorBool, setError] = useState(false);
 
         useEffect(() => {
@@ -29,22 +26,20 @@ export default function App() {
             socket.on('joinRoomSuccess', () => SwitchComp(2));
         }, []);
 
+        const onSubmit = data => {
+            socket.emit('join game', data['game id']);
+        }
+
         return ( //fix ui for mobile
             <div className='HomeContainer'>
                 <section className="intro">
-                    <h1>/shotgun-game</h1>
-                    <form onSubmit={(e) => {
-                        e.preventDefault();
-                        socket.emit('join game', input);
-                    }}>
+                    <h1>&gt;reload/hit/repeat</h1>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <section id="InputHolder">
                             <input 
                                 type="text" 
                                 placeholder="game id" 
-                                value={input}
-                                onChange={(e) => { //figure out issue with controlled input
-                                    setInput(e.target.value);
-                                }}
+                                {...register('game id', { required: true })}
                                 />
                         </section>
                         <div className="buttonholder">
@@ -83,18 +78,6 @@ export default function App() {
         );
     }
 
-    //probably not going to use
-    function ErrorPage() {
-        return(
-            <div className="Container">
-                <button className="exitMarker">
-                    x
-                </button>
-                <h1>Error 404</h1>
-            </div>
-        );
-    }
-
 
     function Gamepad() { 
         const ButtonStyle = {backgroundColor: "#464545", borderColor:"#353434"};
@@ -109,7 +92,6 @@ export default function App() {
         const [gameDisplay, changeDis] = useState(waiting);
 
         useEffect(() => {
-
             socket.on('enter game', (id) => {
                 initGameid(id);
                 startText(true);
@@ -141,63 +123,7 @@ export default function App() {
             socket.on('display', (message) => {
                 changeDis(message);
             });
-
         }, []);
-
-        function TimedDisplay (x, opponentMove) {
-            switch(x) {
-                case 1:
-                    return new Promise(resolve => {
-                        switch(opponentMove) {
-                            case 1:
-                                changeDis("Opponent: Shield");
-                                setTimeout(resolve, 2000); 
-                                break;
-                            case 2:
-                                changeDis("Opponent: Reload");
-                                setTimeout(resolve, 2000);
-                                break;
-                            default:
-                                changeDis("Opponent: Hit");
-                                setTimeout(resolve, 2000);
-                                break;
-                        }
-                        
-                    });
-                case 2:
-                    return new Promise(resolve => {
-                        changeDis("You won");
-                        setTimeout(resolve, 2000);
-                    });    
-                case 3:
-                    return new Promise(resolve => {
-                        changeDis("You Lost");
-                        setTimeout(resolve, 2000);
-                    });   
-                case 4:
-                    return new Promise(resolve => {
-                        changeDis("You didn't do anything");
-                        setTimeout(resolve, 2000);
-                    });   
-                case 5:
-                    return new Promise(resolve => {
-                        var timeleft = 5
-                        changeDis(timeleft);
-                        var fiveSec = setInterval(() => {
-                            timeleft--;
-                            if(timeleft < 1) {
-                                clearInterval(fiveSec);
-                                resolve();
-                            }
-                            changeDis((prevSec)=>{return prevSec-1;});
-                        }, 1000);
-                    }); 
-            }
-        }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
 
         const reEnable = () => {
             changeB1(ButtonStyle);
@@ -212,49 +138,6 @@ export default function App() {
             changeB1(ButtonStyleEnd);
             changeB2(ButtonStyleEnd);
             changeB3(ButtonStyleEnd);
-        }
-
-        const ai = () => {
-            let i = Math.floor(Math.random()*4);
-            if(aireloaded)
-                i = Math.floor(Math.random()*6);
-            if(i >= 0 && i <= 2) 
-                return 1;
-            if(i === 3) {
-                aireloaded = true;
-                return 2;
-            }
-            if(i === 4 || i === 5) {
-                aireloaded = false;
-                return 3;
-            }
-        }
-
-        const Gameplay = async () => {
-            aireloaded = false;
-            while(true) {
-                GameMove = 0;
-                reEnable();
-                await TimedDisplay(5);
-                disable();
-                if(GameMove === 0) {
-                    await TimedDisplay(4);
-                    break;
-                }
-                let Aichoice = ai();
-                console.log(Aichoice);
-                if(GameMove === 3 && (Aichoice === 2 || Aichoice === 3)) {
-                    await TimedDisplay(2);
-                    break;
-                } else if (Aichoice === 3 && GameMove === 2) {
-                    await TimedDisplay(3);
-                    break;
-                } else {
-                    await TimedDisplay(1, Aichoice);
-                }
-            }
-            startText(false);
-            disable();
         }
 
         return (
