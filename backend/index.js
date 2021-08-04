@@ -152,8 +152,8 @@ io.on('connection', (socket) => {
                 });   
             case 5:
                 return new Promise((resolve, reject) => {
-                    var timeleft = 5
-                    console.log(SingleGame[id])
+                    var timeleft = 5;
+                    console.log(SingleGame[id]);
                     if(SingleGame[id]) {
                         io.in(id).emit('disable');
                         reject();
@@ -169,7 +169,7 @@ io.on('connection', (socket) => {
                         if(SingleGame[id]){
                             console.log("hello?")
                             clearInterval(fiveSec);
-                            reject(); 
+                            reject();
                         } else
                             io.in(id).emit('display', timeleft);
                     }, 1000);
@@ -182,7 +182,8 @@ io.on('connection', (socket) => {
             io.in(id).emit('init game');
             while(true) {
                 console.log(SingleGame[id])
-                createMove(socket.id);
+                createMove(games[id][0]);
+                createMove(games[id][1]);
                 io.in(id).emit('enable');
                 await TimedDisplay(5, id);
                 io.in(id).emit('disable');
@@ -214,7 +215,7 @@ io.on('connection', (socket) => {
                 io.in(id).emit('disable');
             }
         } catch (e) {
-            console.log(e)
+            console.log("exited game during play");
         }
     });
 
