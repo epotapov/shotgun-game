@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
             socket.emit('enter player 2', gameid);
             socket.join(gameid);
             console.log(socket.id)
-            socket.broadcast.to(gameid).emit('full game');
+            io.in(gameid).emit('full game');
             Leaveloop = false;
             console.log(games);
         }
@@ -108,23 +108,23 @@ io.on('connection', (socket) => {
 
     const TimedDisplay = (x, id, user1, user2) => {
         switch(x) {
-            case 1: // No action game goes on
+            case 1: 
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id])
-                    if(SingleGame[id])
+                    console.log(SingleGame[id] + " display previous move")
+                    if(SingleGame[id]) {
                         reject();
-                    else {
+                    } else {
                         io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
                         io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
                         setTimeout(resolve, 2000);
                     }
                 });
-            case 2: //someone won
+            case 2: 
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id])
-                    if(SingleGame[id])
+                    console.log(SingleGame[id] + " display who won/lost")
+                    if(SingleGame[id]) {
                         reject();
-                    else {
+                    } else {
                         io.to(user1).emit('display', "you won");
                         io.to(user2).emit('display', "you lost");
                         setTimeout(resolve, 2000);
@@ -132,20 +132,20 @@ io.on('connection', (socket) => {
                 });    
             case 3:
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id])
-                    if(SingleGame[id])
+                    console.log(SingleGame[id] + " display game tied")
+                    if(SingleGame[id]) {
                         reject();
-                    else {
-                        io.in(id).emit('display', "game tied"); 
+                    } else {
+                        io.in(id).emit('display', " game tied"); 
                         setTimeout(resolve, 2000);
                     }
                 });   
             case 4:
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id])
-                    if(SingleGame[id])
+                    console.log(SingleGame[id] + " display inactive")
+                    if(SingleGame[id]) {
                         reject();
-                    else {
+                    } else {
                         io.in(id).emit('display', "game ended due to inactivity");
                         setTimeout(resolve, 2000);
                     }
@@ -157,8 +157,9 @@ io.on('connection', (socket) => {
                     if(SingleGame[id]) {
                         io.in(id).emit('disable');
                         reject();
-                    } else 
+                    } else {
                         io.in(id).emit('display', timeleft);
+                    }
                     var fiveSec = setInterval(() => {
                         console.log(SingleGame[id])
                         timeleft--;
@@ -166,12 +167,13 @@ io.on('connection', (socket) => {
                             clearInterval(fiveSec);
                             resolve();
                         }
-                        if(SingleGame[id]){
+                        if(SingleGame[id]) {
                             console.log("hello?")
                             clearInterval(fiveSec);
                             reject();
-                        } else
+                        } else {
                             io.in(id).emit('display', timeleft);
+                        }
                     }, 1000);
                 }); 
         }
@@ -230,8 +232,8 @@ io.on('connection', (socket) => {
                     exitGame(id, socket.id);
                     deleteUser(socket.id);
                     if(games[id]) {
-                        socket.broadcast.to(id).emit("player 2 leaves");
-                        socket.broadcast.to(id).emit("disable");
+                        io.in(id).emit("player 2 leaves");
+                        io.in(id).emit("disable");
                     }
                     break;
                 }

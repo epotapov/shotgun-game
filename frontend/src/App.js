@@ -30,7 +30,7 @@ export default function App() {
             socket.emit('join game', data['game id']);
         }
 
-        return ( //fix ui for mobile
+        return (
             <div className='HomeContainer'>
                 <section className="intro">
                     <h1>&gt;reload/hit/repeat</h1>
@@ -103,11 +103,12 @@ export default function App() {
 
             socket.on('player 2 leaves', () => {
                 startText(true);
-                changeDis(waiting)
+                changeDis(waiting);
             });
 
             socket.on('full game', () => {
                 startText(false);
+                changeDis("");
             });
 
             socket.on('init game', () => {
