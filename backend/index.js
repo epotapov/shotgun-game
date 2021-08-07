@@ -85,8 +85,6 @@ io.on('connection', (socket) => {
         createMove(socket.id);
         socket.emit('enter game', id);
         socket.join(id);
-        console.log(id);
-        console.log(socket.id)
         console.log(games);
     });
 
@@ -99,7 +97,6 @@ io.on('connection', (socket) => {
             socket.emit('joinRoomSuccess');
             socket.emit('enter player 2', gameid);
             socket.join(gameid);
-            console.log(socket.id)
             io.in(gameid).emit('full game');
             Leaveloop = false;
             console.log(games);
@@ -110,7 +107,6 @@ io.on('connection', (socket) => {
         switch(x) {
             case 1: 
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id] + " display previous move")
                     if(SingleGame[id]) {
                         reject();
                     } else {
@@ -121,7 +117,6 @@ io.on('connection', (socket) => {
                 });
             case 2: 
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id] + " display who won/lost")
                     if(SingleGame[id]) {
                         reject();
                     } else {
@@ -132,7 +127,6 @@ io.on('connection', (socket) => {
                 });    
             case 3:
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id] + " display game tied")
                     if(SingleGame[id]) {
                         reject();
                     } else {
@@ -142,7 +136,6 @@ io.on('connection', (socket) => {
                 });   
             case 4:
                 return new Promise((resolve, reject) => {
-                    console.log(SingleGame[id] + " display inactive")
                     if(SingleGame[id]) {
                         reject();
                     } else {
@@ -153,7 +146,6 @@ io.on('connection', (socket) => {
             case 5:
                 return new Promise((resolve, reject) => {
                     var timeleft = 5;
-                    console.log(SingleGame[id]);
                     if(SingleGame[id]) {
                         io.in(id).emit('disable');
                         reject();
@@ -161,14 +153,12 @@ io.on('connection', (socket) => {
                         io.in(id).emit('display', timeleft);
                     }
                     var fiveSec = setInterval(() => {
-                        console.log(SingleGame[id])
                         timeleft--;
                         if(timeleft < 1) {
                             clearInterval(fiveSec);
                             resolve();
                         }
                         if(SingleGame[id]) {
-                            console.log("hello?")
                             clearInterval(fiveSec);
                             reject();
                         } else {
@@ -183,7 +173,6 @@ io.on('connection', (socket) => {
         try {
             io.in(id).emit('init game');
             while(true) {
-                console.log(SingleGame[id])
                 createMove(games[id][0]);
                 createMove(games[id][1]);
                 io.in(id).emit('enable');
@@ -193,7 +182,6 @@ io.on('connection', (socket) => {
                     break;
                 }
                 if(userChoice[games[id][0]] === 0 || userChoice[games[id][1]] === 0 || !userChoice[games[id][0]] || !userChoice[games[id][1]]) {
-                    console.log("help me")
                     await TimedDisplay(4, id);
                     break;
                 }
