@@ -14,6 +14,7 @@ var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const games = {};
 const userChoice = {};
 const SingleGame = {};
+const SingleGamePrv = {};
 
 const createGame = (gameid, userid) => {
     games[gameid] = [userid];
@@ -108,11 +109,11 @@ io.on('connection', (socket) => {
             case 1: 
                 return new Promise((resolve, reject) => {
                     if(SingleGame[id]) {
-                        reject();
+                        reject;
                     } else {
                         io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
                         io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
-                        setTimeout(resolve, 2000);
+                        setTimeout(resolve, 2000); //exiting and returning quickly problem
                     }
                 });
             case 2: 
@@ -146,21 +147,25 @@ io.on('connection', (socket) => {
             case 5:
                 return new Promise((resolve, reject) => {
                     var timeleft = 5;
+                    console.log(SingleGame[id]) //testing console
+                    console.log(timeleft) //testing console
                     if(SingleGame[id]) {
                         io.in(id).emit('disable');
-                        reject();
+                        reject;
                     } else {
                         io.in(id).emit('display', timeleft);
                     }
                     var fiveSec = setInterval(() => {
                         timeleft--;
+                        console.log(SingleGame[id]) //testing console
+                        console.log(timeleft) //testing console
                         if(timeleft < 1) {
                             clearInterval(fiveSec);
-                            resolve();
+                            resolve;
                         }
                         if(SingleGame[id]) {
                             clearInterval(fiveSec);
-                            reject();
+                            reject;
                         } else {
                             io.in(id).emit('display', timeleft);
                         }
@@ -198,6 +203,11 @@ io.on('connection', (socket) => {
                     break; 
                 } else {
                     await TimedDisplay(1, id, games[id][0], games[id][1]);
+                }
+                if(SingleGamePrv[id]) {
+                    console.log("hi there")
+                    delete SingleGamePrv[id];
+                    break;
                 }
             }
             if(!SingleGame[id]) {
