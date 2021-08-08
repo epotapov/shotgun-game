@@ -109,10 +109,24 @@ io.on('connection', (socket) => {
             case 1: 
                 return new Promise((resolve, reject) => {
                     if(SingleGame[id]) {
-                        reject;
+                        reject();
                     } else {
                         io.to(user1).emit('display', gameChoiceDisplay(userChoice[user2]));
                         io.to(user2).emit('display', gameChoiceDisplay(userChoice[user1]));
+                        var timeleft = 20;
+                        var Check = setInterval(() => {
+                            if(timeleft < 1) {
+                                clearInterval(Check);
+                                SingleGamePrv[id] = true;
+                            }
+                            if(SingleGame[id]) {
+                                clearInterval(Check);
+                                console.log("yello")
+                                SingleGamePrv[id] = true;
+                                reject();
+                            }
+                            timeleft--;
+                        }, 100);
                         setTimeout(resolve, 2000); //exiting and returning quickly problem
                     }
                 });
@@ -151,7 +165,7 @@ io.on('connection', (socket) => {
                     console.log(timeleft) //testing console
                     if(SingleGame[id]) {
                         io.in(id).emit('disable');
-                        reject;
+                        reject();
                     } else {
                         io.in(id).emit('display', timeleft);
                     }
@@ -161,11 +175,11 @@ io.on('connection', (socket) => {
                         console.log(timeleft) //testing console
                         if(timeleft < 1) {
                             clearInterval(fiveSec);
-                            resolve;
+                            resolve();
                         }
                         if(SingleGame[id]) {
                             clearInterval(fiveSec);
-                            reject;
+                            reject();
                         } else {
                             io.in(id).emit('display', timeleft);
                         }
@@ -186,6 +200,11 @@ io.on('connection', (socket) => {
                 if(!games[id]) {
                     break;
                 }
+                if(SingleGamePrv[id]) { //testing
+                    console.log("hi there")
+                    delete SingleGamePrv[id];
+                    break;
+                }
                 if(userChoice[games[id][0]] === 0 || userChoice[games[id][1]] === 0 || !userChoice[games[id][0]] || !userChoice[games[id][1]]) {
                     await TimedDisplay(4, id);
                     break;
@@ -202,12 +221,8 @@ io.on('connection', (socket) => {
                     await TimedDisplay(2, id, games[id][1], games[id][0]);
                     break; 
                 } else {
-                    await TimedDisplay(1, id, games[id][0], games[id][1]);
-                }
-                if(SingleGamePrv[id]) { //testing
                     console.log("hi there")
-                    delete SingleGamePrv[id];
-                    break;
+                    await TimedDisplay(1, id, games[id][0], games[id][1]);
                 }
             }
             if(!SingleGame[id]) {
