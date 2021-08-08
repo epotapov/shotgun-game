@@ -204,7 +204,7 @@ io.on('connection', (socket) => {
                 } else {
                     await TimedDisplay(1, id, games[id][0], games[id][1]);
                 }
-                if(SingleGamePrv[id]) {
+                if(SingleGamePrv[id]) { //testing
                     console.log("hi there")
                     delete SingleGamePrv[id];
                     break;
