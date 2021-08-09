@@ -117,7 +117,6 @@ io.on('connection', (socket) => {
                         var Check = setInterval(() => {
                             if(timeleft < 1) {
                                 clearInterval(Check);
-                                SingleGamePrv[id] = true;
                             }
                             if(SingleGame[id]) {
                                 clearInterval(Check);
@@ -200,11 +199,13 @@ io.on('connection', (socket) => {
                 if(!games[id]) {
                     break;
                 }
-                if(SingleGamePrv[id]) { //testing
+                console.log("the thing is ")
+                console.log(SingleGamePrv[id])
+                /*if(SingleGamePrv[id]) { //testing
                     console.log("hi there")
                     delete SingleGamePrv[id];
                     break;
-                }
+                }*/
                 if(userChoice[games[id][0]] === 0 || userChoice[games[id][1]] === 0 || !userChoice[games[id][0]] || !userChoice[games[id][1]]) {
                     await TimedDisplay(4, id);
                     break;
