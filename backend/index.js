@@ -121,12 +121,11 @@ io.on('connection', (socket) => {
                             if(SingleGame[id]) {
                                 clearInterval(Check);
                                 console.log("yello")
-                                SingleGamePrv[id] = true;
                                 reject();
                             }
                             timeleft--;
                         }, 100);
-                        setTimeout(resolve, 2000); //exiting and returning quickly problem
+                        setTimeout(resolve, 2000);
                     }
                 });
             case 2: 
@@ -199,13 +198,8 @@ io.on('connection', (socket) => {
                 if(!games[id]) {
                     break;
                 }
-                console.log("the thing is ")
-                console.log(SingleGamePrv[id])
-                /*if(SingleGamePrv[id]) { //testing
-                    console.log("hi there")
-                    delete SingleGamePrv[id];
-                    break;
-                }*/
+                console.log("the thing is ") //testing code
+                console.log(SingleGamePrv[id]) //testing code
                 if(userChoice[games[id][0]] === 0 || userChoice[games[id][1]] === 0 || !userChoice[games[id][0]] || !userChoice[games[id][1]]) {
                     await TimedDisplay(4, id);
                     break;
