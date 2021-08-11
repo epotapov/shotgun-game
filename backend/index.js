@@ -14,7 +14,6 @@ var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const games = {};
 const userChoice = {};
 const SingleGame = {};
-const SingleGamePrv = {};
 
 const createGame = (gameid, userid) => {
     games[gameid] = [userid];
