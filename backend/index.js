@@ -120,7 +120,6 @@ io.on('connection', (socket) => {
                             }
                             if(SingleGame[id]) {
                                 clearInterval(Check);
-                                console.log("yello")
                                 reject();
                             }
                             timeleft--;
@@ -159,8 +158,6 @@ io.on('connection', (socket) => {
             case 5:
                 return new Promise((resolve, reject) => {
                     var timeleft = 5;
-                    console.log(SingleGame[id]) //testing console
-                    console.log(timeleft) //testing console
                     if(SingleGame[id]) {
                         io.in(id).emit('disable');
                         reject();
@@ -169,8 +166,6 @@ io.on('connection', (socket) => {
                     }
                     var fiveSec = setInterval(() => {
                         timeleft--;
-                        console.log(SingleGame[id]) //testing console
-                        console.log(timeleft) //testing console
                         if(timeleft < 1) {
                             clearInterval(fiveSec);
                             resolve();
@@ -198,8 +193,6 @@ io.on('connection', (socket) => {
                 if(!games[id]) {
                     break;
                 }
-                console.log("the thing is ") //testing code
-                console.log(SingleGamePrv[id]) //testing code
                 if(userChoice[games[id][0]] === 0 || userChoice[games[id][1]] === 0 || !userChoice[games[id][0]] || !userChoice[games[id][1]]) {
                     await TimedDisplay(4, id);
                     break;
@@ -216,7 +209,6 @@ io.on('connection', (socket) => {
                     await TimedDisplay(2, id, games[id][1], games[id][0]);
                     break; 
                 } else {
-                    console.log("hi there")
                     await TimedDisplay(1, id, games[id][0], games[id][1]);
                 }
             }
