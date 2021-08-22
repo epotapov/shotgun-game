@@ -61,7 +61,7 @@ export default function App() {
                             <li>Reload</li>
                             <li>Hit (Reload to Pick)</li>
                         </ul>
-                        <li>Shield proctects against hits</li>
+                        <li>Shield protects against hits</li>
                         <li>Wins are obtained through unguarded hits (Hit a reloading player)</li>
                         <li>Ties are when both hit each other</li>
                     </ul>
