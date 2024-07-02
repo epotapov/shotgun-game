@@ -63,7 +63,7 @@ export default function App() {
                         </ul>
                         <li>Shield protects against hits</li>
                         <li>Wins are obtained through unguarded hits (Hit a reloading player)</li>
-                        <li>Ties are when both hit each other</li>
+                        <li>Ties are obtained when both players hit each other</li>
                     </ul>
                     <div className="buttonholder">
                         <button type="button" onClick={() => {
